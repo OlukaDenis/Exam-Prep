@@ -8,4 +8,9 @@ public class Constants {
     public static final String YOUTUBE_SUFFIX = "/0.jpg";
     public static final String ENGLISH_LANGUAGE = "en-US";
     public static final String WIKIPEDIA_PAGE_URL = "https://en.m.wikipedia.org/wiki/";
+
+    //Notification constants
+    public static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
+    public static final int NOTIFICATION_ID = 0;
+
 }
