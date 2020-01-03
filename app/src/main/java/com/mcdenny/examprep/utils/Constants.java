@@ -12,5 +12,6 @@ public class Constants {
     //Notification constants
     public static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
     public static final int NOTIFICATION_ID = 0;
+    public static final String ACTION_UPDATE_NOTIFICATION = "com.mcdenny.examprep.ACTION_UPDATE_NOTIFICATION";
 
 }

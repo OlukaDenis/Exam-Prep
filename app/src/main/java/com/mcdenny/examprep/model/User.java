@@ -1,12 +1,54 @@
 package com.mcdenny.examprep.model;
 
-public class User {
-    private String email;
-    private String password;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-    public User(String email, String password) {
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "users")
+public class User implements Parcelable {
+
+    @PrimaryKey
+    @ColumnInfo(name = "email")
+    private String email;
+
+    @ColumnInfo(name = "name")
+    private String name;
+
+
+    public User(String email, String name) {
         this.email = email;
-        this.password = password;
+        this.name = name;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(email);
+        dest.writeString(name);
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
+
+    private User(Parcel in) {
+        email = in.readString();
+        name = in.readString();
     }
 
     public String getEmail() {
@@ -17,11 +59,11 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public String getName() {
+        return name;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setName(String name) {
+        this.name = name;
     }
 }

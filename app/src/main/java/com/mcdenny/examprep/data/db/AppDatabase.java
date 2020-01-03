@@ -7,18 +7,20 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 import com.mcdenny.examprep.model.Movie;
+import com.mcdenny.examprep.model.User;
 
-@Database(entities = {Movie.class}, version = 1, exportSchema = false)
+@Database(entities = {Movie.class, User.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract MovieDao movieDao();
+    public abstract UserDao userDao();
     private static AppDatabase INSTANCE;
 
     public static AppDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
-                    // Create database here
+                    // Creating database >>
                     INSTANCE = buildDatabase(context);
                 }
             }
