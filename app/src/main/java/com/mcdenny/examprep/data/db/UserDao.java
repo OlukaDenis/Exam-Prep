@@ -2,6 +2,7 @@ package com.mcdenny.examprep.data.db;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -14,17 +15,20 @@ import java.util.List;
 @Dao
 public interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long[] addUsers(List<User> users);
+    void addUsers(List<User> users);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long[] addUser(User user);
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    void addUser(User user);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    int updateUser(User user);
+    void updateUser(User user);
 
     @Query("SELECT * FROM users")
     LiveData<List<User>> getAllUsers();
 
     @Query("SELECT * FROM users WHERE email == :email")
     User getUser(String email);
+
+    @Delete
+    void deleteUser(User user);
 }

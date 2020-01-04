@@ -2,8 +2,6 @@ package com.mcdenny.examprep.view.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,9 +24,7 @@ import android.widget.Button;
 
 import com.mcdenny.examprep.R;
 import com.mcdenny.examprep.model.Movie;
-import com.mcdenny.examprep.utils.Constants;
 import com.mcdenny.examprep.view.adapters.MovieAdapter;
-import com.mcdenny.examprep.view.fragments.TrendingFragment;
 import com.mcdenny.examprep.viewmodel.MovieViewModel;
 
 import java.util.List;

@@ -3,6 +3,7 @@ package com.mcdenny.examprep.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -11,11 +12,14 @@ import androidx.room.PrimaryKey;
 public class User implements Parcelable {
 
     @PrimaryKey
+    @NonNull
     @ColumnInfo(name = "email")
     private String email;
 
     @ColumnInfo(name = "name")
     private String name;
+
+    public User(){}
 
 
     public User(String email, String name) {
