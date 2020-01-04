@@ -26,7 +26,6 @@ public class MovieRepository {
     private ApiService apiService;
     private AppDatabase database;
     private MovieDao movieDao;
-    private static MovieRepository instance;
 
     public MovieRepository(Application application){
         database = AppDatabase.getDatabase(application);
