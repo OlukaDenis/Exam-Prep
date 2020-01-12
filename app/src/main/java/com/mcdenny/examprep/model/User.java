@@ -2,10 +2,12 @@ package com.mcdenny.examprep.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Patterns;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "users")
@@ -19,6 +21,7 @@ public class User implements Parcelable {
     @ColumnInfo(name = "name")
     private String name;
 
+    @Ignore
     public User(){}
 
 
@@ -53,6 +56,10 @@ public class User implements Parcelable {
     private User(Parcel in) {
         email = in.readString();
         name = in.readString();
+    }
+
+    public boolean isEmailValid() {
+        return Patterns.EMAIL_ADDRESS.matcher(getEmail()).matches();
     }
 
     public String getEmail() {
