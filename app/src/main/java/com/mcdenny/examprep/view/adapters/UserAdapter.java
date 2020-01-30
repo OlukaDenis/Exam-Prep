@@ -35,7 +35,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     @Override
     public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.layout_movies, parent, false);
+        View view = inflater.inflate(R.layout.layout_users, parent, false);
         return new UserViewHolder(view);
     }
 
@@ -71,7 +71,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            user_name = itemView.findViewById(R.id.tv_movie_title);
+            user_name = itemView.findViewById(R.id.tv_username);
         }
 
         public void setItemClickListener(ItemClickListener itemClickListener) {

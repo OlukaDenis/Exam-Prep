@@ -2,6 +2,7 @@ package com.mcdenny.examprep.data.repository;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -26,6 +27,7 @@ public class MovieRepository {
     private ApiService apiService;
     private AppDatabase database;
     private MovieDao movieDao;
+    private static final String TAG = "MovieRepository";
 
     public MovieRepository(Application application){
         database = AppDatabase.getDatabase(application);
@@ -34,11 +36,13 @@ public class MovieRepository {
 
     public LiveData<List<Movie>> getTrendingMovies(){
         refreshMovies();
+
         return movieDao.getAllMovies(); //getting the saved movies
     }
 
     //saving to room database
     private void refreshMovies() {
+        Log.d(TAG, "refreshMovies: Called....");
         apiService = ApiClient.getApiService();
         apiService.getTrendingMovies(API_KEY,1).enqueue(new Callback<MovieResponse>() {
             @Override
@@ -46,6 +50,7 @@ public class MovieRepository {
                 if (response.isSuccessful()){
                     MovieResponse movieResponse = response.body();
                     List<Movie> movies = movieResponse.getResults();
+                    Log.d(TAG, "getTrendingMovies: "+movies.toString());
                     movieDao.insertMovies(movies);
                 }
 
@@ -53,7 +58,7 @@ public class MovieRepository {
 
             @Override
             public void onFailure(Call<MovieResponse> call, Throwable t) {
-
+                Log.e(TAG, "onFailure: ",t );
             }
         });
     }

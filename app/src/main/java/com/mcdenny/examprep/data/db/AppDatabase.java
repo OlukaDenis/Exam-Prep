@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase;
 import com.mcdenny.examprep.model.Movie;
 import com.mcdenny.examprep.model.User;
 
-@Database(entities = {Movie.class, User.class}, version = 1, exportSchema = false)
+@Database(entities = {Movie.class, User.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract MovieDao movieDao();
@@ -31,5 +31,8 @@ public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase buildDatabase(Context context) {
         return Room.databaseBuilder(context,
                 AppDatabase.class, "Movie.db")
-                .allowMainThreadQueries().build();
+                .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
+                .build();
+
     }}

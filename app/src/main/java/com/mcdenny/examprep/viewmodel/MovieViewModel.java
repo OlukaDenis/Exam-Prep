@@ -1,6 +1,7 @@
 package com.mcdenny.examprep.viewmodel;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -16,6 +17,7 @@ import java.util.List;
 public class MovieViewModel extends AndroidViewModel {
     private MovieRepository movieRepository;
     private LiveData<List<Movie>> movies;
+    private static final String TAG = "MovieViewModel";
 
     public MovieViewModel(Application application){
         super(application);
@@ -24,6 +26,7 @@ public class MovieViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<Movie>> getMovies(){
+        Log.d(TAG, "getMovies: Called....");
         return movies;
     }
 }

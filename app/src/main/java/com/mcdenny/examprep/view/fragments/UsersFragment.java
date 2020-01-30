@@ -56,13 +56,10 @@ public class UsersFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
-        userViewModel.getAllUsers().observe(this, new Observer<List<User>>() {
-            @Override
-            public void onChanged(List<User> users) {
-                adapter = new UserAdapter(context, userViewModel.getAllUsers().getValue());
-                recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-            }
+        userViewModel.getAllUsers().observe(this, users -> {
+            adapter = new UserAdapter(context, userViewModel.getAllUsers().getValue());
+            recyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
         });
 
 
