@@ -14,13 +14,13 @@ import java.util.List;
 @Dao
 public interface MovieDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long[] insertMovies(List<Movie> movies);
+    void insertMovies(List<Movie> movies);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long insertMovie(Movie movie);
+    void insertMovie(Movie movie);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    int updateMovie(Movie movie);
+    void updateMovie(Movie movie);
 
     @Query("SELECT * FROM movies")
     LiveData<List<Movie>> getAllMovies();

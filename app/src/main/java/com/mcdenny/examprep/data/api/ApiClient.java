@@ -6,11 +6,12 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.mcdenny.examprep.utils.Constants.BASE_URL;
+
 public class ApiClient {
     private static Retrofit retrofit = null;
     private static final int REQUEST_TIMEOUT = 60;
     private static OkHttpClient okHttpClient;
-    private static final String BASE_URL = "http://api.themoviedb.org/3/";
 
     public static ApiService getApiService(){
         return getClient().create(ApiService.class);
@@ -22,7 +23,7 @@ public class ApiClient {
             initOkHttp();
         if(retrofit == null){
             retrofit = new Retrofit.Builder()
-                    .baseUrl(ApiClient.BASE_URL)
+                    .baseUrl(BASE_URL)
                     .client(okHttpClient)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
