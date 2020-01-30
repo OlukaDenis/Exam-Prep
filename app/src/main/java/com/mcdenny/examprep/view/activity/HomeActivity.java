@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -19,17 +21,25 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.mcdenny.examprep.R;
 import com.mcdenny.examprep.model.Movie;
+import com.mcdenny.examprep.utils.Constants;
 import com.mcdenny.examprep.view.adapters.MovieAdapter;
+import com.mcdenny.examprep.view.receivers.AlarmReceiver;
 import com.mcdenny.examprep.viewmodel.MovieViewModel;
 
 import java.util.List;
 
 import static com.mcdenny.examprep.utils.Constants.ACTION_UPDATE_NOTIFICATION;
+import static com.mcdenny.examprep.utils.Constants.ALARM_NOTIFICATION_ID;
 import static com.mcdenny.examprep.utils.Constants.NOTIFICATION_ID;
 import static com.mcdenny.examprep.utils.Constants.PRIMARY_CHANNEL_ID;
 
@@ -41,6 +51,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private NotificationManager notificationManager;
     private NotificationReceiver mReceiver = new NotificationReceiver();
+    private static final String TAG = "HomeActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,38 +59,66 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         viewModel = ViewModelProviders.of(this).get(MovieViewModel.class);
-        viewModel.getMovies().observe(this, new Observer<List<Movie>>() {
-            @Override
-            public void onChanged(List<Movie> movies) {
-                initRecyclerview();
-                adapter.notifyDataSetChanged();
-            }
+        viewModel.getMovies().observe(this, movies -> {
+            Log.d(TAG, "onCreate: "+movies.size());
+            initRecyclerview();
+            adapter.notifyDataSetChanged();
         });
 
         notify = findViewById(R.id.notify);
-        notify.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendNotification();
-            }
-        });
+        notify.setOnClickListener(v -> sendNotification());
+
+        //Start the notification manager
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        /* Starting the Alarm Manager */
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
 
-        update = findViewById(R.id.update);
-        update.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateNotification();
-            }
-        });
+        //An intent to notify the broadcast receiver
+        Intent notifyIntent =  new Intent(this, AlarmReceiver.class);
+        PendingIntent notifyPendingIntent = PendingIntent.getBroadcast
+                (this, NOTIFICATION_ID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+//        update = findViewById(R.id.update);
+//        update.setOnClickListener(v -> updateNotification());
 
         cancel = findViewById(R.id.cancel);
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cancelNotification();
+        cancel.setOnClickListener(v -> cancelNotification());
+
+        /** To assign the toggle button to the running alarm
+         * when the toggle button turns off - when the app
+         * is closed
+         */
+        boolean alarmUp = (PendingIntent.getBroadcast(this, NOTIFICATION_ID, notifyIntent,
+                PendingIntent.FLAG_NO_CREATE) != null);
+
+        //Setting up the alarm toggle
+        ToggleButton alarmToggle = findViewById(R.id.alarmToggle);
+        alarmToggle.setChecked(alarmUp);
+        alarmToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            String toastMessage = null;
+            if(isChecked){
+                long repeatInterval = Constants.INTERVAL_FIVE_MINUTES;
+                long triggerTime = SystemClock.elapsedRealtime() + repeatInterval;
+                if(alarmManager != null) {
+                    // starting the alarm
+                    alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                            triggerTime, repeatInterval, notifyPendingIntent);
+                    toastMessage = "Alarm on!";
+                }
+            } else {
+                if(alarmManager != null){
+                    alarmManager.cancel(notifyPendingIntent);
+                }
+                notificationManager.cancelAll();
+                toastMessage = "Alarm off!";
             }
+            Toast.makeText(HomeActivity.this, toastMessage,Toast.LENGTH_SHORT)
+                    .show();
         });
+
         createNotificationChannel();
 
         registerReceiver(mReceiver, new IntentFilter(ACTION_UPDATE_NOTIFICATION));
@@ -106,7 +145,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void createNotificationChannel(){
-        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             //Notification channel targeting Android 8 and above
             NotificationChannel channel = new NotificationChannel(PRIMARY_CHANNEL_ID,

@@ -8,10 +8,16 @@ public class Constants {
     public static final String YOUTUBE_SUFFIX = "/0.jpg";
     public static final String ENGLISH_LANGUAGE = "en-US";
     public static final String WIKIPEDIA_PAGE_URL = "https://en.m.wikipedia.org/wiki/";
+    public static final String BASE_URL = "https://api.themoviedb.org/3/";
 
     //Notification constants
     public static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
     public static final int NOTIFICATION_ID = 0;
+    public static final int ALARM_NOTIFICATION_ID = 5;
     public static final String ACTION_UPDATE_NOTIFICATION = "com.mcdenny.examprep.ACTION_UPDATE_NOTIFICATION";
+
+
+    //Alarm
+    public static final long INTERVAL_FIVE_MINUTES = 5 * 60 * 1000;
 
 }
