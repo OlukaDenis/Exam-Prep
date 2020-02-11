@@ -33,7 +33,9 @@ dependencies {
     def room_version = "2.2.3"
     def dagger_version = "2.25.4"
     def retrofit_version = "2.7.0"
-    def lifecycle_version = "2.1.0"
+    def lifecycle_version = "2.2.0"
+    def versions_work = "2.3.0"
+    def paging_version= "1.0.1"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
@@ -70,10 +72,16 @@ dependencies {
 
     //okhttp
     implementation "com.squareup.okhttp3:okhttp:4.0.1"
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.3.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.4.1'
 
     //picasso
     implementation 'com.squareup.picasso:picasso:2.71828'
+
+    //Work manager
+    implementation "androidx.work:work-runtime:$versions_work"
+
+    // paging library
+    implementation "android.arch.paging:runtime:$paging_version"
 
 
 }

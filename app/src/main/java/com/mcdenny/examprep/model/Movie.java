@@ -1,5 +1,8 @@
 package com.mcdenny.examprep.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -8,7 +11,7 @@ import androidx.room.PrimaryKey;
 import com.google.gson.annotations.SerializedName;
 
 @Entity(tableName = "movies")
-public class Movie {
+public class Movie implements Parcelable {
 
     @ColumnInfo(name = "poster_path")
     @SerializedName("poster_path")
@@ -112,6 +115,68 @@ public class Movie {
         this.status = status;
     }
 
+
+    protected Movie(Parcel in) {
+        posterPath = in.readString();
+        adult = in.readByte() != 0;
+        overview = in.readString();
+        releaseDate = in.readString();
+        id = in.readInt();
+        originalTitle = in.readString();
+        originalLanguage = in.readString();
+        title = in.readString();
+        backdropPath = in.readString();
+        popularity = in.readDouble();
+        voteCount = in.readInt();
+        video = in.readByte() != 0;
+        voteAverage = in.readDouble();
+        budget = in.readInt();
+        homepage = in.readString();
+        imdbId = in.readString();
+        revenue = in.readInt();
+        runtime = in.readInt();
+        status = in.readString();
+    }
+
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(posterPath);
+        dest.writeByte((byte) (adult ? 1 : 0));
+        dest.writeString(overview);
+        dest.writeString(releaseDate);
+        dest.writeInt(id);
+        dest.writeString(originalTitle);
+        dest.writeString(originalLanguage);
+        dest.writeString(title);
+        dest.writeString(backdropPath);
+        dest.writeDouble(popularity);
+        dest.writeInt(voteCount);
+        dest.writeByte((byte) (video ? 1 : 0));
+        dest.writeDouble(voteAverage);
+        dest.writeInt(budget);
+        dest.writeString(homepage);
+        dest.writeString(imdbId);
+        dest.writeInt(revenue);
+        dest.writeInt(runtime);
+        dest.writeString(status);
+    }
 
     public String getPosterPath() {
         return posterPath;
@@ -263,5 +328,17 @@ public class Movie {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+        Movie movie = (Movie) obj;
+        return movie.getId() == this.getId() &&
+                movie.getPosterPath() == movie.getPosterPath() &&
+                movie.getBackdropPath() == movie.getBackdropPath() &&
+                movie.getTitle() == movie.getTitle() &&
+                movie.getOverview() == movie.getOverview();
     }
 }

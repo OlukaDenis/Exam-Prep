@@ -3,7 +3,9 @@ package com.mcdenny.examprep.view.activity;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -58,12 +60,34 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        viewModel = ViewModelProviders.of(this).get(MovieViewModel.class);
-        viewModel.getMovies().observe(this, movies -> {
-            Log.d(TAG, "onCreate: "+movies.size());
-            initRecyclerview();
-            adapter.notifyDataSetChanged();
+
+            viewModel = new ViewModelProvider(this, new MovieViewModel.MovieViewModelFactory(this.getApplication()))
+                    .get(MovieViewModel.class);
+//
+//        viewModel.getMovies().observe(this, movies -> {
+//            Log.d(TAG, "onCreate: "+movies.size());
+//            initRecyclerview();
+//            adapter.notifyDataSetChanged();
+//        });
+
+        adapter = new MovieAdapter();
+        recyclerView = findViewById(R.id.trending_recycler_view);
+        recyclerView.setAdapter(adapter);
+
+        //listen to data changes and pass it to adapter for displaying in recycler view
+        viewModel.movies.observe(this, pagedList -> {
+            adapter.submitList(pagedList);
         });
+
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+        DividerItemDecoration dividerItemDecoration =
+                new DividerItemDecoration(recyclerView.getContext(),
+                        LinearLayoutManager.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+
+
 
         notify = findViewById(R.id.notify);
         notify.setOnClickListener(v -> sendNotification());
@@ -100,7 +124,7 @@ public class HomeActivity extends AppCompatActivity {
         alarmToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
             String toastMessage = null;
             if(isChecked){
-                long repeatInterval = Constants.INTERVAL_FIVE_MINUTES;
+                long repeatInterval = AlarmManager.INTERVAL_HOUR;
                 long triggerTime = SystemClock.elapsedRealtime() + repeatInterval;
                 if(alarmManager != null) {
                     // starting the alarm
@@ -125,11 +149,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void initRecyclerview() {
-        recyclerView = findViewById(R.id.trending_recycler_view);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        adapter = new MovieAdapter(this, viewModel.getMovies().getValue());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapter);
+
     }
 
     private void sendNotification() {
