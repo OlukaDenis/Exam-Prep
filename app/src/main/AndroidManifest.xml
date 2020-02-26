@@ -15,13 +15,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".view.activity.SettingsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".view.activity.MainActivity" />
+        </activity>
+
         <receiver
             android:name=".view.receivers.AlarmReceiver"
             android:enabled="true"
             android:exported="false" />
 
         <activity android:name=".view.activity.MovieDetailActivity" />
-        <activity android:name=".view.activity.HomeActivity" />
+        <activity android:name=".view.activity.HomeActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".view.activity.MainActivity" />
+        </activity>
         <activity android:name=".view.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -33,6 +33,7 @@ import android.widget.ToggleButton;
 
 import com.mcdenny.examprep.R;
 import com.mcdenny.examprep.model.Movie;
+import com.mcdenny.examprep.utils.AppUtils;
 import com.mcdenny.examprep.utils.Constants;
 import com.mcdenny.examprep.view.adapters.MovieAdapter;
 import com.mcdenny.examprep.view.receivers.AlarmReceiver;
@@ -59,23 +60,18 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        setTitle("Movies");
 
 
-            viewModel = new ViewModelProvider(this, new MovieViewModel.MovieViewModelFactory(this.getApplication()))
+        viewModel = new ViewModelProvider(this, new MovieViewModel.MovieViewModelFactory(this.getApplication()))
                     .get(MovieViewModel.class);
-//
-//        viewModel.getMovies().observe(this, movies -> {
-//            Log.d(TAG, "onCreate: "+movies.size());
-//            initRecyclerview();
-//            adapter.notifyDataSetChanged();
-//        });
 
         adapter = new MovieAdapter();
         recyclerView = findViewById(R.id.trending_recycler_view);
         recyclerView.setAdapter(adapter);
 
         //listen to data changes and pass it to adapter for displaying in recycler view
-        viewModel.movies.observe(this, pagedList -> {
+        viewModel.moviesPagedList.observe(this, pagedList -> {
             adapter.submitList(pagedList);
         });
 
@@ -94,6 +90,9 @@ public class HomeActivity extends AppCompatActivity {
 
         //Start the notification manager
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        //create the notification channel for the app
+        AppUtils.createNotificationChannel(notificationManager);
 
         /* Starting the Alarm Manager */
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -124,7 +123,8 @@ public class HomeActivity extends AppCompatActivity {
         alarmToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
             String toastMessage = null;
             if(isChecked){
-                long repeatInterval = AlarmManager.INTERVAL_HOUR;
+//                long repeatInterval = AlarmManager.INTERVAL_HOUR;
+                long repeatInterval = Constants.INTERVAL_FIVE_MINUTES;
                 long triggerTime = SystemClock.elapsedRealtime() + repeatInterval;
                 if(alarmManager != null) {
                     // starting the alarm
@@ -143,8 +143,6 @@ public class HomeActivity extends AppCompatActivity {
                     .show();
         });
 
-        createNotificationChannel();
-
         registerReceiver(mReceiver, new IntentFilter(ACTION_UPDATE_NOTIFICATION));
     }
 
@@ -159,48 +157,29 @@ public class HomeActivity extends AppCompatActivity {
                 updateIntent,
                 PendingIntent.FLAG_ONE_SHOT);
 
-        NotificationCompat.Builder notificationBuilder = getNotificationBuilder();
-        notificationBuilder.addAction(R.drawable.ic_update, "Update Notification", updatePendingIntent);
-        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
-    }
 
-    private void createNotificationChannel(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            //Notification channel targeting Android 8 and above
-            NotificationChannel channel = new NotificationChannel(PRIMARY_CHANNEL_ID,
-                    "Mascot Notification",
-                    NotificationManager.IMPORTANCE_HIGH);
-            channel.enableLights(true);
-            channel.enableVibration(true);
-            channel.setLightColor(Color.BLUE);
-            channel.setDescription("Notification from Mascot");
-
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-
-    private NotificationCompat.Builder getNotificationBuilder(){
-        Intent notificationIntent = new Intent(this, MovieDetailActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        Intent notificationIntent = new Intent(this, HomeActivity.class);
+//        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 NOTIFICATION_ID,
                 notificationIntent,
                 0);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, PRIMARY_CHANNEL_ID)
+
+        NotificationCompat.Builder builder = AppUtils.getNotificationBuilder(this,
+                "Exam Preparation",
+                "This is a preparation of the Google Certification Exam!");
+        builder.setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.ic_notification_icon)
-                .setContentTitle("Exam Preparation")
-                .setContentText("This is a preparation of the Google Certification Exam!")
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true)
-                .setDefaults(NotificationCompat.DEFAULT_ALL)
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
-        return builder;
+                .addAction(R.drawable.ic_update, "Update Notification", updatePendingIntent);
+        notificationManager.notify(NOTIFICATION_ID, builder.build());
     }
 
     private void updateNotification(){
         Bitmap bitmapImage = BitmapFactory
                 .decodeResource(getResources(),R.drawable.mascot_1);
-        NotificationCompat.Builder builder = getNotificationBuilder();
+        NotificationCompat.Builder builder = AppUtils.getNotificationBuilder(this,
+                "Exam Preparation Update",
+                "This is a preparation of the Google Certification Exam!");
         builder.setStyle(new NotificationCompat.BigPictureStyle()
             .bigPicture(bitmapImage)
             .setBigContentTitle("Notification updated!"));

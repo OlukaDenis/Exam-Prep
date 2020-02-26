@@ -9,6 +9,7 @@ import android.content.Intent;
 import androidx.core.app.NotificationCompat;
 
 import com.mcdenny.examprep.R;
+import com.mcdenny.examprep.utils.AppUtils;
 import com.mcdenny.examprep.view.activity.HomeActivity;
 
 import static com.mcdenny.examprep.utils.Constants.ALARM_NOTIFICATION_ID;
@@ -31,14 +32,11 @@ public class AlarmReceiver extends BroadcastReceiver {
                 contentIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, PRIMARY_CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_alarm_notification)
-                .setContentTitle("Prepare for Microverse")
-                .setContentText("Don't forget to join the call and study for the Google exam!")
-                .setContentIntent(pendingIntent)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true)
-                .setDefaults(NotificationCompat.DEFAULT_ALL);
+        NotificationCompat.Builder builder = AppUtils.getNotificationBuilder(context,
+                                                "Prepare for Microverse",
+                                               "Don't forget to join the call and study for the Google exam!");
+        builder.setContentIntent(pendingIntent);
+        builder.setSmallIcon(R.drawable.ic_alarm_notification);
         notificationManager.notify(ALARM_NOTIFICATION_ID, builder.build());
     }
 }

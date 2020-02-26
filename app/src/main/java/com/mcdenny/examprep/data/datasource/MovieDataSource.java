@@ -28,45 +28,77 @@ import static com.mcdenny.examprep.utils.Constants.FIRST_PAGE;
 //Data source for PagedList, it is used for loading data for each page
 public class MovieDataSource extends PageKeyedDataSource<Integer, Movie> {
     private static final String TAG = "MovieDataSource";
-    private MovieDao movieDao;
-    private AppDatabase database;
 
-    public MovieDataSource(Context context) {
-        database = AppDatabase.getDatabase(context);
-        movieDao = database.movieDao();
-    }
 
     //This method is called too load initial data
     @Override
     public void loadInitial(@NonNull LoadInitialParams params, @NonNull LoadInitialCallback callback) {
-        List<Movie> movies = movieDao.getCouponsBySize(0, params.requestedLoadSize);
-        int triesCount = 0;
-        while (movies.size() == 0){
-            movies = movieDao.getCouponsBySize(0, params.requestedLoadSize);
-            triesCount += 1;
-            if (triesCount == 6){
-                break;
+        ApiService service = ApiClient.getApiService(ApiService.class);
+        Call<MovieResponse> call = service.getTrendingMovies(API_KEY, FIRST_PAGE);
+        call.enqueue(new Callback<MovieResponse>() {
+            @Override
+            public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                MovieResponse movieResponse = response.body();
+                if(movieResponse != null){
+                    List<Movie> responseResults = movieResponse.getResults();
+                    callback.onResult(responseResults, null, FIRST_PAGE + 1);
+                }
             }
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                Log.e(TAG, "loadInitial: ",e );
+
+            @Override
+            public void onFailure(Call<MovieResponse> call, Throwable t) {
+
             }
-        }
-        callback.onResult(movies, null, movies.size() + 1);
+        });
     }
 
     @Override
     public void loadBefore(@NonNull LoadParams params, @NonNull LoadCallback callback) {
+        ApiService service = ApiClient.getApiService(ApiService.class);
+        Call<MovieResponse> call = service.getTrendingMovies(API_KEY, (Integer) params.key);
+        call.enqueue(new Callback<MovieResponse>() {
+            @Override
+            public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                MovieResponse movieResponse = response.body();
+                if(movieResponse != null){
+                    List<Movie> responseResults = movieResponse.getResults();
+                    int key;
+                    if ((Integer) params.key > 1){
+                        key = (Integer) params.key - 1;
+                    } else {
+                        key = 0;
+                    }
+                    callback.onResult(responseResults, key);
+                }
+            }
 
+            @Override
+            public void onFailure(Call<MovieResponse> call, Throwable t) {
+
+            }
+        });
 
     }
 
     //This method is called to load pages of data using key passed in params
     @Override
     public void loadAfter(@NonNull LoadParams params, @NonNull LoadCallback callback) {
-        List<Movie> movies = movieDao.getCouponsBySize((Integer) params.key, params.requestedLoadSize);
-        int nextKey = (Integer) params.key + movies.size();
-        callback.onResult(movies, nextKey);
+        ApiService service = ApiClient.getApiService(ApiService.class);
+        Call<MovieResponse> call = service.getTrendingMovies(API_KEY, (Integer) params.key);
+        call.enqueue(new Callback<MovieResponse>() {
+            @Override
+            public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                MovieResponse movieResponse = response.body();
+                if(movieResponse != null){
+                    List<Movie> responseResults = movieResponse.getResults();
+                    callback.onResult(responseResults, (Integer) params.key + 1);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MovieResponse> call, Throwable t) {
+
+            }
+        });
     }
 }

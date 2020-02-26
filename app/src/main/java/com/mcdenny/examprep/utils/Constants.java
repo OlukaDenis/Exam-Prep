@@ -24,9 +24,12 @@ public final class Constants {
 
     //Notification constants
     public static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
+    public static final String WORKER_CHANNEL_ID = "worker_notification_channel";
     public static final int NOTIFICATION_ID = 0;
     public static final int ALARM_NOTIFICATION_ID = 5;
+    public static final int WORKER_NOTIFICATION_ID = 2;
     public static final String ACTION_UPDATE_NOTIFICATION = "com.mcdenny.examprep.ACTION_UPDATE_NOTIFICATION";
+    public static final String ACTION_WORKER_NOTIFICATION = "com.mcdenny.examprep.ACTION_WORKER_NOTIFICATION";
 
 
     //Alarm

@@ -2,8 +2,6 @@ package com.mcdenny.examprep.view.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.BindingAdapter;
-import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -11,11 +9,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
 
 import com.mcdenny.examprep.R;
-import com.mcdenny.examprep.view.fragments.AddUserFragment;
+import com.mcdenny.examprep.utils.AppUtils;
 import com.mcdenny.examprep.view.fragments.UsersFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
         if(savedInstanceState == null){
             openFragment();
         }
+
     }
 
     private void openFragment() {
@@ -51,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.action_movie){
             startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+        }
+        else if (id == R.id.action_worker){
+            startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }

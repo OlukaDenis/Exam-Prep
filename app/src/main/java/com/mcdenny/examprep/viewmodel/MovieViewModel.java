@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
+import com.mcdenny.examprep.data.datasource.MovieDataSource;
 import com.mcdenny.examprep.data.factory.MovieDataSourceFactory;
 import com.mcdenny.examprep.data.repository.MovieRepository;
 import com.mcdenny.examprep.model.Movie;
@@ -16,26 +17,30 @@ import com.mcdenny.examprep.model.User;
 
 import java.util.List;
 
+import static com.mcdenny.examprep.utils.Constants.PAGE_SIZE;
+
 public class MovieViewModel extends ViewModel {
     private MovieRepository movieRepository;
-    public LiveData<PagedList<Movie>> movies;
+    public LiveData<PagedList<Movie>> moviesPagedList;
     private static final String TAG = "MovieViewModel";
 
     public MovieViewModel(Application application){
 
         movieRepository = new MovieRepository(application);
-//        movies = movieRepository.getTrendingMovies();
 
         //Instantiating Moviedatasourcefactory
-        MovieDataSourceFactory factory = new MovieDataSourceFactory(application);
+        MovieDataSourceFactory factory = new MovieDataSourceFactory();
+        LiveData<MovieDataSource> movieDataSourceLiveData = factory.movieDataSourceMutableLiveData;
 
         //Create a pagedlist config
-        PagedList.Config config = (new PagedList.Config.Builder()).setEnablePlaceholders(true)
-                                    .setInitialLoadSizeHint(10)
-                                    .setPageSize(15).build();
+        PagedList.Config config = new PagedList.Config.Builder()
+                                    .setEnablePlaceholders(false)
+                                    .setPageSize(PAGE_SIZE)
+                                    .build();
+
         //create LiveData object using LivePagedListBuilder which takes
         //data source factory and page config as params
-        movies = new LivePagedListBuilder<>(factory, config).build();
+        moviesPagedList = new LivePagedListBuilder<>(factory, config).build();
 
     }
 

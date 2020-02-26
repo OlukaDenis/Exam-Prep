@@ -9,4 +9,11 @@
         android:icon="@drawable/ic_movie"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_worker"
+        android:orderInCategory="100"
+        android:title="Worker"
+        android:icon="@drawable/ic_near_by"
+        app:showAsAction="ifRoom" />
+
 </menu>
