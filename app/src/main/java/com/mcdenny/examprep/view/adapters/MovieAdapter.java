@@ -1,27 +1,74 @@
 package com.mcdenny.examprep.view.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.paging.PagedListAdapter;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mcdenny.examprep.R;
 import com.mcdenny.examprep.model.Movie;
+import com.mcdenny.examprep.utils.Constants;
+import com.mcdenny.examprep.view.activity.MovieDetailActivity;
+import com.mcdenny.examprep.view.interfaces.ItemClickListener;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.List;
 
-public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
-    private Context context;
-    private List<Movie> movieList;
+import static com.mcdenny.examprep.utils.Constants.IMAGE_URL_BASE_PATH;
 
-    public MovieAdapter(Context context, List<Movie> movieList) {
-        this.context = context;
-        this.movieList = movieList;
+/** this adapter displays coupon items in recycler view
+ *  it extends PagedListAdapter which gets data from PagedList
+ *  and displays in recycler view as data is available in PagedList
+ */
+
+public class MovieAdapter extends PagedListAdapter<Movie, MovieAdapter.MovieViewHolder>{
+    private static final String TAG = "MovieAdapter";
+
+
+    public MovieAdapter() {
+        super(DIFF_CALLBACK);
     }
+
+    public static DiffUtil.ItemCallback<Movie> DIFF_CALLBACK = new DiffUtil.ItemCallback<Movie>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Movie oldItem, @NonNull Movie newItem) {
+            return oldItem.getId() == newItem.getId();
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Movie oldItem, @NonNull Movie newItem) {
+            return oldItem.equals(newItem);
+        }
+    };
+
+    //Getting the drawable from the picasso
+    private Target target = new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            Log.d(TAG, "onBitmapLoaded: Bitmap from Picasso: "+bitmap);
+            Constants.selected_movie_bimap = bitmap;
+        }
+
+        @Override
+        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+            Log.e(TAG, "onBitmapFailed: ",e );
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+        }
+    };
 
     @NonNull
     @Override
@@ -33,19 +80,42 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     @Override
     public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
-    holder.movie_title.setText(movieList.get(position).getTitle());
+        Movie movie = getItem(position);
+        if (movie != null){
+            holder.movie_title.setText(movie.getTitle());
+            holder.itemView.setOnClickListener(v -> {
+//                Intent detailIntent = new Intent(context, MovieDetailActivity.class);
+//                String image_url = IMAGE_URL_BASE_PATH + movie.getPosterPath();
+//                Log.d(TAG, "Image poster Url: "+image_url);
+//
+//                //Extract bitmap
+//                Picasso.get()
+//                        .load(image_url)
+//                        .resize(100, 200)
+//                        .into(target);
+//
+//                Constants.selected_movie_poster_url = image_url;
+//                Constants.selected_movie_id = movie.getId();
+//                detailIntent.putExtra("movie_id", movie.getId());
+//                Log.d(TAG, "onBindViewHolder - Movie id: "+movie.getId());
+//                detailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                context.startActivity(detailIntent);
+
+            });
+        }
+
+
+
     }
 
-    @Override
-    public int getItemCount() {
-        return movieList.size();
-    }
-
-    public class MovieViewHolder extends RecyclerView.ViewHolder {
+    class MovieViewHolder extends RecyclerView.ViewHolder{
         private TextView movie_title;
-        public MovieViewHolder(@NonNull View itemView) {
+        MovieViewHolder(@NonNull View itemView) {
             super(itemView);
             movie_title = itemView.findViewById(R.id.tv_movie_title);
         }
+
+
     }
+
 }

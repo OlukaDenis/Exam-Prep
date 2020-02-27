@@ -22,9 +22,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.mcdenny.examprep.utils.Constants.API_KEY;
+import static com.mcdenny.examprep.utils.Constants.FIRST_PAGE;
 
 public class MovieRepository {
-    private ApiService apiService;
     private AppDatabase database;
     private MovieDao movieDao;
     private static final String TAG = "MovieRepository";
@@ -43,15 +43,19 @@ public class MovieRepository {
     //saving to room database
     private void refreshMovies() {
         Log.d(TAG, "refreshMovies: Called....");
-        apiService = ApiClient.getApiService();
-        apiService.getTrendingMovies(API_KEY,1).enqueue(new Callback<MovieResponse>() {
+        ApiService service = ApiClient.getApiService(ApiService.class);
+        Call<MovieResponse> call = service.getTrendingMovies(API_KEY, FIRST_PAGE);
+        call.enqueue(new Callback<MovieResponse>() {
             @Override
             public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
                 if (response.isSuccessful()){
                     MovieResponse movieResponse = response.body();
-                    List<Movie> movies = movieResponse.getResults();
-                    Log.d(TAG, "getTrendingMovies: "+movies.toString());
-                    movieDao.insertMovies(movies);
+                    if (movieResponse != null){
+                        List<Movie> movies = movieResponse.getResults();
+                        Log.d(TAG, "getTrendingMovies: "+movies.toString());
+                        movieDao.insertMovies(movies);
+                    }
+
                 }
 
             }
@@ -61,5 +65,9 @@ public class MovieRepository {
                 Log.e(TAG, "onFailure: ",t );
             }
         });
+    }
+
+    public Movie getMovieById(String id){
+       return movieDao.getMovie(id);
     }
 }

@@ -4,6 +4,8 @@
     package="com.mcdenny.examprep">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -16,7 +18,7 @@
         <receiver
             android:name=".view.receivers.AlarmReceiver"
             android:enabled="true"
-            android:exported="false"></receiver>
+            android:exported="false" />
 
         <activity android:name=".view.activity.MovieDetailActivity" />
         <activity android:name=".view.activity.HomeActivity" />

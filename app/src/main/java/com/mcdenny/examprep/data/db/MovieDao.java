@@ -25,7 +25,11 @@ public interface MovieDao {
     @Query("SELECT * FROM movies")
     LiveData<List<Movie>> getAllMovies();
 
-    @Query("select * from movies where title==:title")
-    Movie getMovie(String title);
+    @Query("SELECT * FROM movies WHERE id==:id")
+    Movie getMovie(String id);
+
+    //to fetch data required to display in each page
+    @Query("SELECT * FROM movies WHERE  id >= :id LIMIT :size")
+    List<Movie> getCouponsBySize(int id, int size);
 
 }
